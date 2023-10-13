@@ -8,10 +8,32 @@ class PersonalForm extends StatefulWidget {
 
 
 class _PersonalFormState extends State<PersonalForm> {
-  final _kodeProdukTextboxController = TextEditingController();
-  final _namaProdukTextboxController = TextEditingController();
-  final _hargaProdukTextboxController = TextEditingController();
-  DateTime selectedDate = DateTime.now();
+  final _fullNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
+  final _personalIdController = TextEditingController();
+  final _addressController = TextEditingController();
+  DateTime? _birthDate;
+
+  
+  bool isVerificationDone= false;
+  String inputValue = '';
+  bool isPhoneNumberValid = false;
+  bool agreeToTerms = false;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _birthDate) {
+      setState(() {
+        _birthDate = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +47,20 @@ class _PersonalFormState extends State<PersonalForm> {
               fontWeight: FontWeight.w700,
               height: 0,
           ),
-        )
+        ),
+        actions: const [
+          IconButton(
+            onPressed: null,
+            icon: Icon(
+                Icons.sticky_note_2,
+                color: Colors.black
+              )
+          )
+        ]
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [
+          children: <Widget >[
             _textboxFullName(),
             _textboxEmail(),
             _textboxPhone(),
@@ -38,11 +69,10 @@ class _PersonalFormState extends State<PersonalForm> {
             _inputCalendar(),
             _checkboxAgree(),
             _tombolSimpan()
-          ].map((widget) =>  Padding(
+          ].map((widget) => Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-              child: widget,
+              child: widget
             )).toList()
-          ,
         ),
       ),
     );
@@ -77,7 +107,7 @@ class _PersonalFormState extends State<PersonalForm> {
               ),
               contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
             ),
-            controller: _kodeProdukTextboxController
+            controller: _fullNameController
           )
         ]
       )
@@ -114,14 +144,16 @@ class _PersonalFormState extends State<PersonalForm> {
               ),
               contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
             ),
-            controller: _kodeProdukTextboxController
+            controller: _emailController
           )
         ]
       )
     );  
   }
 
+
   _textboxPhone() {
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 5),
       child: Column(
@@ -143,6 +175,11 @@ class _PersonalFormState extends State<PersonalForm> {
               Expanded(
                 flex: 2,
                 child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      isPhoneNumberValid = value.isNotEmpty;
+                    });
+                  },
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: "Enter Phone Number",
@@ -153,9 +190,9 @@ class _PersonalFormState extends State<PersonalForm> {
                       fontWeight: FontWeight.w400,
                       height: 0,
                     ),
-                    contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
+                    contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10),  
                   ),
-                  controller: _kodeProdukTextboxController
+                  controller: _phoneNumberController
                 )
               ),
               const SizedBox(width: 10),
@@ -178,7 +215,28 @@ class _PersonalFormState extends State<PersonalForm> {
                   //       )
                   //     );
                   // },
-                  onPressed: null,
+                  onPressed: isPhoneNumberValid? () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Verification'),
+                                    content: Text('Verification Berhasil'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text('Close'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                            setState(() {
+                              isVerificationDone = true; // Set verifikasi selesai menjadi true
+                            });
+                          }
+                        : null,
                   style: ElevatedButton.styleFrom(
                     // minimumSize: const Size.fromHeight(50),
                     shape: RoundedRectangleBorder(
@@ -187,15 +245,13 @@ class _PersonalFormState extends State<PersonalForm> {
                     padding: EdgeInsets.all(10)
                   ),
                   child: const Text('Verify')
+                 ) 
                 )
-              )
-              
-            ],
-          )
-          
-        ]
-      )
-    );
+              ]
+            )  
+          ],
+        )
+      );
     
   }
 
@@ -228,7 +284,7 @@ _textboxPersonalID() {
               ),
               contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
             ),
-            controller: _kodeProdukTextboxController
+            controller: _personalIdController
           )
         ]
       )
@@ -236,9 +292,7 @@ _textboxPersonalID() {
   }
 
   _textboxAddress() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: Column(
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
@@ -264,20 +318,23 @@ _textboxPersonalID() {
               ),
               contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
             ),
-            controller: _kodeProdukTextboxController
+            controller: _addressController
           )
         ]
-      )
-    );  
+    );
   }
 
    _checkboxAgree() {
-    return const Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Checkbox(
-          value: false,
-          onChanged: null
+          value: agreeToTerms,
+          onChanged: (bool? value){
+            setState(() {
+              agreeToTerms = value ?? false;
+            });
+          }
         ),
         Expanded(
           child: Text("In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
@@ -288,27 +345,45 @@ _textboxPersonalID() {
     );  
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
   _inputCalendar() {
-    return ListTile(
-      title: Text("Choose a Date"),
-      subtitle: _selectedDate == null ?
-        Text("Select Date") : Text("${_selectedDate}".split('')[0]),
-      trailing: Icon(Icons.calendar_today),
-      onTap: () => _selectDate(context),
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+              'Choose a Date',
+              style: TextStyle(
+                  color: Color(0xFF2A2A2A),
+                  fontSize: 14,
+                  fontFamily: 'Chivo',
+                  fontWeight: FontWeight.w400,
+                  height: 0,
+              ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 1.0
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(5))
+
+            ),
+            child: ListTile(
+              title: Text(_birthDate == null ? "Select Date" : "${_birthDate?.toLocal()}".split(' ')[0]),
+              titleTextStyle: const TextStyle(
+                color: Color(0xFF9E9E9E),
+                fontSize: 14,
+                fontFamily: 'Chivo',
+                fontWeight: FontWeight.w400,
+                height: 0,
+              ),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: () {
+                _selectDate(context);
+              },
+            )
+          )
+        ]
     );
   }
 
@@ -317,23 +392,28 @@ _textboxPersonalID() {
     return Align(
       alignment: Alignment.bottomRight,
       child: ElevatedButton(
-            // onPressed: () {
-            //   String kodeProduk = _kodeProdukTextboxController.text;
-            //   String namaProduk = _namaProdukTextboxController.text;
-            //   int harga = int.parse(_hargaProdukTextboxController.text);
+            onPressed: () {
+              String fullName = _fullNameController.text;
+              String email = _emailController.text;
+              String phone = _phoneNumberController.text;
+              String personalId = _personalIdController.text;
+              String address = _addressController.text;
+              String date = "${_birthDate?.toLocal()}".split(' ')[0];
               
-            //   Navigator
-            //     .of(context)
-            //     .push(MaterialPageRoute(
-            //       builder: (context) => ProdukDetail(
-            //           kodeProduk: kodeProduk,
-            //           namaProduk: namaProduk,
-            //           harga: harga,
-            //         )
-            //       )
-            //     );
-            // },
-            onPressed: null,
+              Navigator
+                .of(context)
+                .push(MaterialPageRoute(
+                  builder: (context) => ListData(
+                      fullName: fullName,
+                      email: email,
+                      phone: phone,
+                      personalId: personalId,
+                      address: address,
+                      date: date,
+                    )
+                  )
+                );
+            },
             style: ElevatedButton.styleFrom(
               minimumSize: const Size.fromHeight(50),
               shape: RoundedRectangleBorder(

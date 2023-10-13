@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
 
-class ProdukDetail extends StatefulWidget {
-  final String? kodeProduk;
-  final String? namaProduk;
-  final int? harga;
+class ListData extends StatefulWidget {
+  final String? fullName;
+  final String? email;
+  final String? personalId;
+  final String? phone;
+  final String? address;
+  final String? date;
 
-  const ProdukDetail({
+  const ListData({
     Key? key,
-    this.kodeProduk,
-    this.namaProduk,
-    this.harga
+    this.fullName,
+    this.email,
+    this.personalId,
+    this.phone,
+    this.address,
+    this.date
+
   }) : super(key: key);
 
   @override
-  _ProdukDetailState createState() => _ProdukDetailState();
+  _ListDataState createState() => _ListDataState();
 }
 
-class _ProdukDetailState extends State<ProdukDetail> {
+class _ListDataState extends State<ListData> {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detail Produk'),
-        backgroundColor: Colors.indigo.shade700,
-        foregroundColor: Colors.white
+        title: const Text('LIST PERSONAL DATA')
       ),
       body: Container(
         alignment: Alignment.topLeft,
@@ -31,9 +37,7 @@ class _ProdukDetailState extends State<ProdukDetail> {
         child : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-              _showKodeProduk(),
-              _showNamaProduk(),
-              _showHargaProduk()
+              _showKodeProduk(screenWidth)
             ]
             .map((widget) => Padding(
                 padding: const EdgeInsets.only(left: 30),
@@ -45,51 +49,58 @@ class _ProdukDetailState extends State<ProdukDetail> {
     }
 
 
-  _showKodeProduk() {
-    return Text.rich(
-      TextSpan(
-        text: "Kode Produk : ",
-        children: <TextSpan>[
-          TextSpan(
-            text: widget.kodeProduk.toString(),
+  _showKodeProduk(sWidth) {
+    return Container(
+      width: (sWidth - 55.0),
+      padding: EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black, width: 2.0), // Border
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            offset: Offset(0, 2),
+            blurRadius: 6.0,
+          ),
+        ], // Shadow
+        borderRadius: BorderRadius.circular(12.0), // Border radius
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, 
+        children: [
+          Text(
+            widget.fullName.toString(),
             style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.deepPurple.shade900)
+                color: Colors.black,
+                fontSize: 18,
+                fontFamily: 'Chivo',
+                fontWeight: FontWeight.w400,
+                height: 0,
+            ),
+          ),
+          Text(
+            widget.address.toString(),
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 10,
+                fontFamily: 'Chivo',
+                fontWeight: FontWeight.w400,
+                height: 0,
+            ),
+          ),
+          Text(
+              'Email : ${widget.email}',
+              style: TextStyle(
+                color: Color(0xFF4A3CE4),
+                fontSize: 10,
+                fontFamily: 'Chivo',
+                fontWeight: FontWeight.w400,
+                height: 0,
+              ),
           )
         ]
       )
     );
   }
 
-  _showNamaProduk() {
-    return Text.rich(
-      TextSpan(
-        text: "Nama Produk : ",
-        children: <TextSpan>[
-          TextSpan(
-            text: widget.namaProduk,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.deepPurple.shade900)
-          )
-        ]
-      )
-    );
-  }
-  
-  _showHargaProduk() {
-    return Text.rich(
-      TextSpan(
-        text: "Harga : ",
-        children: <TextSpan>[
-          TextSpan(
-            text: widget.harga.toString(),
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.deepPurple.shade900)
-          )
-        ]
-      )
-    );
-  }
 }
