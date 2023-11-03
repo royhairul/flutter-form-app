@@ -199,22 +199,6 @@ class _PersonalFormState extends State<PersonalForm> {
               Expanded(
                 flex: 1,
                 child: ElevatedButton(
-                  // onPressed: () {
-                  //   String kodeProduk = _kodeProdukTextboxController.text;
-                  //   String namaProduk = _namaProdukTextboxController.text;
-                  //   int harga = int.parse(_hargaProdukTextboxController.text);
-                    
-                  //   Navigator
-                  //     .of(context)
-                  //     .push(MaterialPageRoute(
-                  //       builder: (context) => ProdukDetail(
-                  //           kodeProduk: kodeProduk,
-                  //           namaProduk: namaProduk,
-                  //           harga: harga,
-                  //         )
-                  //       )
-                  //     );
-                  // },
                   onPressed: isPhoneNumberValid? () {
                             showDialog(
                                 context: context,
