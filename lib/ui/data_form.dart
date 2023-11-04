@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_app/ui/data_view.dart';
+import 'package:form_app/ui/person.dart';
 
 class PersonalForm extends StatefulWidget { 
   const PersonalForm({Key? key}) : super(key: key);
@@ -8,6 +9,8 @@ class PersonalForm extends StatefulWidget {
 
 
 class _PersonalFormState extends State<PersonalForm> {
+  final List<Person> persons = [];
+
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneNumberController = TextEditingController();
@@ -44,21 +47,29 @@ class _PersonalFormState extends State<PersonalForm> {
               color: Colors.black,
               fontSize: 20,
               fontFamily: 'Chivo',
-              fontWeight: FontWeight.w700,
-              height: 0,
+              fontWeight: FontWeight.w700
           ),
         ),
-        actions: const [
+        actions: [
           IconButton(
-            onPressed: null,
-            icon: Icon(
+            icon: const Icon(
                 Icons.sticky_note_2,
                 color: Colors.black
-              )
+            ),
+            onPressed: () {
+              Navigator
+                .of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (context) => ListData(persons: persons)
+                  ));
+            },
           )
-        ]
+        ],
+        toolbarHeight: 60,
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(18),
         child: Column(
           children: <Widget >[
             _textboxFullName(),
@@ -70,11 +81,40 @@ class _PersonalFormState extends State<PersonalForm> {
             _checkboxAgree(),
             _tombolSimpan()
           ].map((widget) => Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              padding: const EdgeInsets.only(bottom: 10),
               child: widget
             )).toList()
         ),
       ),
+    );
+  }
+
+  TextStyle labelTextStyle() {
+    return const TextStyle(
+        color: Color(0xFF2A2A2A),
+        fontSize: 14,
+        fontFamily: 'Chivo',
+        fontWeight: FontWeight.w400,
+        height: 0,
+      );
+  }
+
+  TextStyle placeholderStyle() {
+    return const TextStyle(
+                color: Color(0xFF9E9E9E),
+                fontSize: 14,
+                fontFamily: 'Chivo',
+                fontWeight: FontWeight.w400,
+                height: 0,
+    );
+  }
+
+  InputDecoration defaultInputDecor(String placeholder) {
+    return InputDecoration(
+      border: const OutlineInputBorder(),
+      hintText: placeholder,
+      hintStyle: placeholderStyle(),
+      contentPadding: const EdgeInsets.fromLTRB(10, 5, 8, 10)
     );
   }
 
@@ -84,29 +124,12 @@ class _PersonalFormState extends State<PersonalForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
               'Full Name',
-              style: TextStyle(
-                  color: Color(0xFF2A2A2A),
-                  fontSize: 14,
-                  fontFamily: 'Chivo',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-              ),
-          ),
+              style: labelTextStyle(),
+          ), 
           TextField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Enter Your Full Name",
-              hintStyle: TextStyle(
-                color: Color(0xFF9E9E9E),
-                fontSize: 14,
-                fontFamily: 'Chivo',
-                fontWeight: FontWeight.w400,
-                height: 0,
-              ),
-              contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
-            ),
+            decoration: defaultInputDecor("Enter Your Full Name"),
             controller: _fullNameController
           )
         ]
@@ -121,30 +144,14 @@ class _PersonalFormState extends State<PersonalForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
               'Email',
-              style: TextStyle(
-                  color: Color(0xFF2A2A2A),
-                  fontSize: 14,
-                  fontFamily: 'Chivo',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-              ),
+              style: labelTextStyle(), 
           ),
           TextField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Enter Your Email",
-              hintStyle: TextStyle(
-                color: Color(0xFF9E9E9E),
-                fontSize: 14,
-                fontFamily: 'Chivo',
-                fontWeight: FontWeight.w400,
-                height: 0,
-              ),
-              contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
-            ),
-            controller: _emailController
+            decoration: defaultInputDecor("Enter Your Email"),
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
           )
         ]
       )
@@ -153,21 +160,14 @@ class _PersonalFormState extends State<PersonalForm> {
 
 
   _textboxPhone() {
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
               'Phone Number',
-              style: TextStyle(
-                  color: Color(0xFF2A2A2A),
-                  fontSize: 14,
-                  fontFamily: 'Chivo',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-              ),
+              style: labelTextStyle(),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,19 +180,9 @@ class _PersonalFormState extends State<PersonalForm> {
                       isPhoneNumberValid = value.isNotEmpty;
                     });
                   },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Enter Phone Number",
-                    hintStyle: TextStyle(
-                      color: Color(0xFF9E9E9E),
-                      fontSize: 14,
-                      fontFamily: 'Chivo',
-                      fontWeight: FontWeight.w400,
-                      height: 0,
-                    ),
-                    contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10),  
-                  ),
-                  controller: _phoneNumberController
+                  decoration: defaultInputDecor("Enter Your Phone Number"),
+                  controller: _phoneNumberController,
+                  keyboardType: TextInputType.phone,
                 )
               ),
               const SizedBox(width: 10),
@@ -245,30 +235,14 @@ _textboxPersonalID() {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
               'Personal ID Number',
-              style: TextStyle(
-                  color: Color(0xFF2A2A2A),
-                  fontSize: 14,
-                  fontFamily: 'Chivo',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-              ),
+              style: labelTextStyle(),
           ),
           TextField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Enter Value",
-              hintStyle: TextStyle(
-                color: Color(0xFF9E9E9E),
-                fontSize: 14,
-                fontFamily: 'Chivo',
-                fontWeight: FontWeight.w400,
-                height: 0,
-              ),
-              contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
-            ),
-            controller: _personalIdController
+            decoration: defaultInputDecor("Enter Your Personal ID"),
+            controller: _personalIdController,
+            keyboardType: TextInputType.number
           )
         ]
       )
@@ -279,29 +253,12 @@ _textboxPersonalID() {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
               'Address',
-              style: TextStyle(
-                  color: Color(0xFF2A2A2A),
-                  fontSize: 14,
-                  fontFamily: 'Chivo',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-              ),
+              style: labelTextStyle(),
           ),
           TextField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Enter Your Address",
-              hintStyle: TextStyle(
-                color: Color(0xFF9E9E9E),
-                fontSize: 14,
-                fontFamily: 'Chivo',
-                fontWeight: FontWeight.w400,
-                height: 0,
-              ),
-              contentPadding: EdgeInsets.fromLTRB(10, 5, 8, 10)
-            ),
+            decoration: defaultInputDecor("Enter Your Address"),
             controller: _addressController
           )
         ]
@@ -320,9 +277,12 @@ _textboxPersonalID() {
             });
           }
         ),
-        Expanded(
+        const Expanded(
           child: Text("In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
             textAlign: TextAlign.justify,
+            style: TextStyle(
+              fontSize: 10,
+            )
           )
         )
       ]
@@ -333,15 +293,9 @@ _textboxPersonalID() {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-              'Choose a Date',
-              style: TextStyle(
-                  color: Color(0xFF2A2A2A),
-                  fontSize: 14,
-                  fontFamily: 'Chivo',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-              ),
+          Text(
+              'Birth Date',
+              style: labelTextStyle()
           ),
           Container(
             alignment: Alignment.center,
@@ -354,8 +308,8 @@ _textboxPersonalID() {
             ),
             child: ListTile(
               title: Text(_birthDate == null ? "Select Date" : "${_birthDate?.toLocal()}".split(' ')[0]),
-              titleTextStyle: const TextStyle(
-                color: Color(0xFF9E9E9E),
+              titleTextStyle: TextStyle(
+                color: _birthDate == null ? Color(0xFF9E9E9E) : Colors.black,
                 fontSize: 14,
                 fontFamily: 'Chivo',
                 fontWeight: FontWeight.w400,
@@ -375,29 +329,26 @@ _textboxPersonalID() {
   _tombolSimpan() {
     return Align(
       alignment: Alignment.bottomRight,
-      child: ElevatedButton(
+      child: ElevatedButton (
             onPressed: () {
-              String fullName = _fullNameController.text;
-              String email = _emailController.text;
-              String phone = _phoneNumberController.text;
-              String personalId = _personalIdController.text;
-              String address = _addressController.text;
-              String date = "${_birthDate?.toLocal()}".split(' ')[0];
-              
-              Navigator
-                .of(context)
-                .push(MaterialPageRoute(
-                  builder: (context) => ListData(
-                      fullName: fullName,
-                      email: email,
-                      phone: phone,
-                      personalId: personalId,
-                      address: address,
-                      date: date,
-                    )
-                  )
-                );
+              Person newPerson = Person(
+                fullName: _fullNameController.text,
+                email: _emailController.text,
+                phoneNumber:  _phoneNumberController.text,
+                personalId: _personalIdController.text,
+                address: _addressController.text,
+                birthDate: "${_birthDate?.toLocal()}".split(' ')[0]
+              );
+
+              persons.add(newPerson);
+
+              _fullNameController.clear();
+              _emailController.clear();
+              _phoneNumberController.clear();
+              _personalIdController.clear();
+              _addressController.clear();
             },
+
             style: ElevatedButton.styleFrom(
               minimumSize: const Size.fromHeight(50),
               shape: RoundedRectangleBorder(
